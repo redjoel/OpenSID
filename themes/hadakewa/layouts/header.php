@@ -36,19 +36,20 @@
 
 	  <!-- Styles untuk tema dan penyesuaiannya di folder desa -->
 	  <link type='text/css' href="<?= base_url().$this->theme_folder.'/'.$this->theme.'/css/first.css'?>" rel='Stylesheet' />
-		<?php if(is_file("desa/css/".$this->theme."/desa-web.css")): ?>
-			<link type='text/css' href="<?= base_url()?>desa/css/<?= $this->theme ?>/desa-web.css" rel='Stylesheet' />
-		<?php endif; ?>
 		<link type='text/css' href="<?= base_url()?>assets/css/font-awesome.min.css" rel='Stylesheet' />
 		<link type='text/css' href="<?= base_url()?>assets/css/ui-buttons.css" rel='Stylesheet' />
 		<?php if ($single_artikel OR $gallery): ?>
 			<link type='text/css' href="<?= base_url()?>assets/front/css/colorbox.css" rel='Stylesheet' />
 		<?php endif ?>
+		<?php if (is_file("desa/css/".$this->theme."/desa-web.css")): ?>
+			<link type='text/css' href="<?= base_url()?>desa/css/<?= $this->theme ?>/desa-web.css" rel='Stylesheet' />
+		<?php endif; ?>
 
 		<script src="<?= base_url()?>assets/front/js/jquery.js"></script>
 		<script src="<?= base_url()?>assets/js/leaflet.js"></script>
 		<script src="<?= base_url()?>assets/front/js/layout.js"></script>
 		<script src="<?= base_url()?>assets/front/js/bootstrap.min.js"></script>
+		<script src="<?= base_url()?>assets/js/leaflet-providers.js"></script>
 
     <!-- Datatables -->
     <link rel="stylesheet" type="text/css" href="<?= base_url() ?>assets/bootstrap/css/dataTables.bootstrap.min.css">
@@ -61,7 +62,10 @@
 		<!-- Untuk carousel, slider, teks_berjalan dan widget aparatur_desa -->
 		<script src="<?php echo base_url()?>assets/front/js/jquery.cycle2.min.js"></script>
 		<script src="<?php echo base_url()?>assets/front/js/jquery.cycle2.carousel.js"></script>
-
+    <!-- Diperlukan untuk javascript yg mengakses resources -->
+    <script type="text/javascript">
+      var BASE_URL = "<?= base_url(); ?>";
+    </script>
 	</head>
 	<body>
 		<div id="maincontainer">
