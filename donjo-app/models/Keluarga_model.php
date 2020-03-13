@@ -5,22 +5,21 @@
 		parent::__construct();
 		$this->load->model('program_bantuan_model');
 		$this->load->model('penduduk_model');
+		$this->load->model('config_model');
 	}
 
-	public function autocomplete()
+	public function autocomplete($cari='')
 	{
-		$sql = "SELECT t.nama FROM tweb_keluarga u LEFT JOIN tweb_penduduk t ON u.nik_kepala = t.id LEFT JOIN tweb_wil_clusterdesa c ON t.id_cluster = c.id WHERE 1  ";
-		$query = $this->db->query($sql);
-		$data = $query->result_array();
+		$this->db->select('t.nama')
+			->distinct()
+			->from('tweb_keluarga u')
+			->join('tweb_penduduk t', 'u.nik_kepala = t.id', 'left')
+			->order_by('t.nama');
+		if ($cari) $this->db->where("t.nama like '%$cari%'");
+		$data = $this->db->get()->result_array();
 
-		$outp = '';
-		for ($i=0; $i<count($data); $i++)
-		{
-			$outp .= ',"'.$data[$i]['nama'].'"';
-		}
-		$outp = strtolower(substr($outp, 1));
-		$outp = '[' .$outp. ']';
-		return $outp;
+		$str = autocomplete_data_ke_str($data);
+		return $str;
 	}
 
 	private function sex_sql()
@@ -552,7 +551,7 @@
 		$kk['id_kk'] = $id;
 		$kk['main'] = $this->keluarga_model->list_anggota($id);
 		$kk['kepala_kk'] = $this->keluarga_model->get_kepala_kk($id);
-		$kk['desa'] = $this->keluarga_model->get_desa();
+		$kk['desa'] = $this->config_model->get_data();
 		$data['all_kk'][] = $kk;
 		return $data;
 	}
@@ -658,13 +657,6 @@
 			LEFT JOIN tweb_keluarga k ON k.id = ?
 			LEFT JOIN tweb_wil_clusterdesa c ON u.id_cluster = c.id WHERE u.id = (SELECT nik_kepala FROM tweb_keluarga WHERE id = ?) ";
 		$query = $this->db->query($sql,array($id,$id));
-		return $query->row_array();
-	}
-
-  public function get_desa()
-  {
-		$sql = "SELECT * FROM config WHERE 1";
-		$query = $this->db->query($sql);
 		return $query->row_array();
 	}
 
@@ -888,7 +880,7 @@
 	public function get_data_unduh_kk($id)
 	{
 		$data = array();
-		$data['desa'] = $this->get_desa();
+		$data['desa'] = $this->config_model->get_data();
 		$data['id_kk'] = $id;
 		$data['main'] = $this->list_anggota($id);
 		$data['kepala_kk']= $this->get_kepala_kk($id);

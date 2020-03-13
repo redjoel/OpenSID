@@ -3,6 +3,7 @@
 	public function __construct()
 	{
 		parent::__construct();
+		$this->load->model('config_model');
 	}
 
 	public function autocomplete()
@@ -316,9 +317,7 @@
 
 	private function get_kode_wilayah()
 	{
-		$sql = "SELECT * FROM config WHERE 1";
-		$query = $this->db->query($sql);
-		$d = $query->row_array();
+		$d = $this->config_model->get_data();
 		$data = $d['kode_kabupaten'].$d['kode_kecamatan'].$d['kode_desa'];
 
 		return $data;
@@ -329,7 +328,7 @@
 		$sql = "SELECT p.id, p.nik, p.nama, h.nama as kk_level
 			FROM tweb_penduduk p
 			LEFT JOIN tweb_penduduk_hubungan h ON p.kk_level = h.id
-			WHERE (status = 1 OR status = 3) AND status_dasar = 1 AND id_rtm = 0";
+			WHERE (status = 1 OR status = 3) AND status_dasar = 1 AND (id_rtm = 0 OR id_rtm IS NULL)";
 		$query = $this->db->query($sql);
 		$data = $query->result_array();
 
@@ -388,13 +387,6 @@
 		$data = $query->row_array();
 		$data['alamat_wilayah'] = $this->penduduk_model->get_alamat_wilayah($data['id']);
 		return $data;
-	}
-
-  public function get_desa()
-  {
-		$sql = "SELECT * FROM config WHERE 1";
-		$query = $this->db->query($sql);
-		return $query->row_array();
 	}
 
 	public function list_hubungan()
