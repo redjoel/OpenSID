@@ -108,7 +108,7 @@
 			return;
 		}
 		$outp = $this->db->insert('tweb_surat_format', $data);
-		$raw_path = "surat/raw/";
+		$raw_path = "template-surat/raw/";
 
 		// Folder untuk surat ini
 		$folder_surat = LOKASI_SURAT_DESA.$data['url_surat']."/";
@@ -161,8 +161,7 @@
 			copy($raw_path."data_form_non_warga.raw", $folder_surat."data_form_".$data['url_surat'].".php");
 		}
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	private function validasi_surat(&$data)
@@ -177,8 +176,7 @@
 		$this->db->where('id', $id);
 		$outp = $this->db->update('tweb_surat_format', $data);
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function upload($url="")
@@ -193,7 +191,7 @@
 			mkdir($folder_surat, 0755, true);
 		}
 		// index.html untuk menutup akses ke folder melalui browser
-		copy("surat/raw/"."index.html", $folder_surat."index.html");
+		copy("template-surat/raw/"."index.html", $folder_surat."index.html");
 
 		$nama_file_rtf = $url . ".rtf";
 		$this->uploadBerkas('rtf', $folder_surat, 'foto', 'surat_master', $nama_file_rtf);
@@ -214,7 +212,7 @@
 		{
 			if (!file_exists($folder_surat.$lampiran))
 			{
-				copy("surat/".$url."/".$lampiran, $folder_surat.$lampiran);
+				copy("template-surat/".$url."/".$lampiran, $folder_surat.$lampiran);
 			}
 		}
 	}
@@ -225,8 +223,7 @@
 		$sql = "DELETE FROM tweb_surat_format WHERE jenis <> 1 AND id = ?";
 		$outp = $this->db->query($sql,array($id));
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function delete_all()
@@ -254,7 +251,7 @@
   {
 		// Lokasi instalasi SID mungkin di sub-folder
     include FCPATH . '/vendor/simple_html_dom.php';
-    $path_bawaan = FCPATH . "/surat/".$surat['url_surat']."/". $surat['url_surat'].".php";
+    $path_bawaan = FCPATH . "/template-surat/".$surat['url_surat']."/". $surat['url_surat'].".php";
     $path_lokal = FCPATH . LOKASI_SURAT_DESA .$surat['url_surat']."/".$surat['url_surat'].".php";
     if (file_exists($path_lokal))
 	    $html = file_get_html($path_lokal);
@@ -327,8 +324,7 @@
 
 		$outp = $this->db->query($sql, $id);
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function lock($id=0, $k=0)
@@ -340,17 +336,16 @@
 
 		$outp = $this->db->query($sql, $id);
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	// Tambahkan surat desa jika folder surat tidak ada di surat master
 	public function impor_surat_desa()
 	{
-		$folder_surat_desa = glob('desa/surat/*' , GLOB_ONLYDIR);
+		$folder_surat_desa = glob('desa/template-surat/*' , GLOB_ONLYDIR);
 		foreach ($folder_surat_desa as $surat)
 		{
-			$surat = str_replace('desa/surat/', '', $surat);
+			$surat = str_replace('desa/template-surat/', '', $surat);
 			$hasil = $this->db->where('url_surat', $surat)->get('tweb_surat_format');
 			if ($hasil->num_rows() == 0)
 			{

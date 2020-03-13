@@ -83,7 +83,7 @@ class First extends Web_Controller {
 		$data['start_paging'] = max($data['paging']->start_link, $p - $data['paging_range']);
 		$data['end_paging'] = min($data['paging']->end_link, $p + $data['paging_range']);
 		$data['pages'] = range($data['start_paging'], $data['end_paging']);
-		$data['artikel'] = $this->first_artikel_m->artikel_show(0, $data['paging']->offset, $data['paging']->per_page);
+		$data['artikel'] = $this->first_artikel_m->artikel_show($data['paging']->offset, $data['paging']->per_page);
 
 		$data['headline'] = $this->first_artikel_m->get_headline();
 		$data['transparansi'] = $this->keuangan_grafik_model->grafik_keuangan_tema();
@@ -287,6 +287,12 @@ class First extends Web_Controller {
 		$data = $this->includes;
 
 		$data['heading'] = $this->laporan_penduduk_model->judul_statistik($stat);
+		if (is_null($data['heading']))
+		{
+			// Permintaan statistik tidak dikenal
+			show_404();
+		}
+
 		$data['jenis_laporan'] = $this->laporan_penduduk_model->jenis_laporan($stat);
 		$data['stat'] = $this->laporan_penduduk_model->list_data($stat);
 		$data['tipe'] = $tipe;
@@ -435,20 +441,20 @@ class First extends Web_Controller {
 		$this->load->view($this->template,$data);
 	}
 
-	public function kategori($kat=0, $p=1)
+	public function kategori($id, $p=1)
 	{
 		$data = $this->includes;
 
 		$data['p'] = $p;
-		$data["judul_kategori"] = $this->first_artikel_m->get_kategori($kat);
-		$data['paging']  = $this->first_artikel_m->paging_kat($p, $kat);
-		$data['paging_page']  = 'kategori/'.$kat;
+		$data["judul_kategori"] = $this->first_artikel_m->get_kategori($id);
+		$data['paging']  = $this->first_artikel_m->paging_kat($p, $id);
+		$data['paging_page']  = 'kategori/'.$id;
 		$data['paging_range'] = 3;
 		$data['start_paging'] = max($data['paging']->start_link, $p - $data['paging_range']);
 		$data['end_paging'] = min($data['paging']->end_link, $p + $data['paging_range']);
 		$data['pages'] = range($data['start_paging'], $data['end_paging']);
 
-		$data['artikel'] = $this->first_artikel_m->list_artikel($data['paging']->offset, $data['paging']->per_page, $kat);
+		$data['artikel'] = $this->first_artikel_m->list_artikel($data['paging']->offset, $data['paging']->per_page, $id);
 
 		$this->_get_common_data($data);
 		$this->load->view($this->template, $data);
