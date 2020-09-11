@@ -34,10 +34,9 @@
 											<div class="col-sm-6">
 												<select class="form-control input-sm" name="filter" onchange="formAction('mainform','<?=site_url('man_user/filter')?>')">
 													<option value="">Semua</option>
-													<option value="1" <?php if ($filter==1): ?>selected<?php endif ?>>Administrator</option>
-													<option value="2" <?php if ($filter==2): ?>selected<?php endif ?>>Operator</option>
-													<option value="3" <?php if ($filter==3): ?>selected<?php endif ?>>Redaksi</option>
-													<option value="4" <?php if ($filter==4): ?>selected<?php endif ?>>Kontributor</option>
+													<?php foreach ($user_group as $item): ?>
+														<option <?php selected($filter, $item['id']); ?> value="<?= $item[id] ?>"><?= $item['nama'] ?></option>
+													<?php endforeach ?>
 												</select>
 											</div>
 											<div class="col-sm-6">
@@ -90,14 +89,14 @@
 															<?php foreach ($main as $data): ?>
 																<tr>
 																	<td>
-																		<?php if ($data['username']!='siteman'): ?>
+																		<?php if ($data['id']!=1): ?>
 																			<input type="checkbox" name="id_cb[]" value="<?=$data['id']?>" />
 																		<?php endif; ?>
 																	</td>
 																	<td><?=$data['no']?></td>
 																	<td nowrap>
 																		<a href="<?=site_url("Man_user/form/$p/$o/$data[id]")?>" class="btn bg-orange btn-flat btn-sm"  title="Ubah"><i class="fa fa-edit"></i></a>
-																		<?php if ($data['username']!='admin'): ?>
+																		<?php if ($data['id']!=1): ?>
 																			<?php if ($data['active'] == '0'): ?>
 																				<a href="<?=site_url('Man_user/user_unlock/'.$data['id'])?>" class="btn bg-navy btn-flat btn-sm"  title="Aktifkan Pengguna"><i class="fa fa-lock">&nbsp;</i></a>
 																			<?php elseif ($data['active'] == '1'): ?>
@@ -161,29 +160,10 @@
 								</div>
 							</div>
 						</div>
-						<div class='modal fade' id='confirm-delete' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-							<div class='modal-dialog'>
-								<div class='modal-content'>
-									<div class='modal-header'>
-										<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-										<h4 class='modal-title' id='myModalLabel'><i class='fa fa-exclamation-triangle text-red'></i> Konfirmasi</h4>
-									</div>
-									<div class='modal-body btn-info'>
-										Apakah Anda yakin ingin menghapus data ini?
-									</div>
-									<div class='modal-footer'>
-										<button type="button" class="btn btn-social btn-flat btn-warning btn-sm" data-dismiss="modal"><i class='fa fa-sign-out'></i> Tutup</button>
-										<a class='btn-ok'>
-											<button type="button" class="btn btn-social btn-flat btn-danger btn-sm" id="ok-delete"><i class='fa fa-trash-o'></i> Hapus</button>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 </div>
-
+<?php $this->load->view('global/confirm_delete');?>

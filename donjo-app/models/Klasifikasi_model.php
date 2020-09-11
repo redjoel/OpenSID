@@ -1,4 +1,4 @@
-<?php class Klasifikasi_model extends CI_model {
+<?php class Klasifikasi_model extends MY_model {
 
 	public function __construct()
 	{
@@ -7,8 +7,7 @@
 
 	public function autocomplete()
 	{
-		$str = autocomplete_str('nama', 'klasifikasi_surat');
-		return $str;
+		return $this->autocomplete_str('nama', 'klasifikasi_surat');
 	}
 
 	public function search_sql()
@@ -110,33 +109,42 @@
 	public function insert()
 	{
 		$data = $_POST;
+		$this->sterilkan_data($data);
 		return $this->db->insert('klasifikasi_surat', $data);
+	}
+
+	private function sterilkan_data(&$data)
+	{
+		$data['kode'] = bilangan_titik($data['kode']);
+		$data['nama'] = alfa_spasi($data['nama']);
+		$data['uraian'] = strip_tags($data['uraian']);
 	}
 
 	public function update($id=0)
 	{
 		$data = $_POST;
-		return $this->db->where('id',$id)->update('klasifikasi_surat',$data);
+		$this->sterilkan_data($data);
+		return $this->db->where('id',$id)->update('klasifikasi_surat', $data);
 	}
 
-	public function delete($id='')
+	public function delete($id='', $semua=false)
 	{
+		if (!$semua) $this->session->success = 1;
+
 		$outp = $this->db->where('id',$id)->delete('klasifikasi_surat');
-		if (!$outp)
-			$_SESSION['success'] = -1;
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 	public function delete_all()
 	{
+		$this->session->success = 1;
+
 		$id_cb = $_POST['id_cb'];
-		if (count($id_cb))
+		foreach ($id_cb as $id)
 		{
-			foreach ($id_cb as $id)
-			{
-				$this->delete($id);
-			}
+			$this->delete($id, $semua=true);
 		}
-		else $_SESSION['success']=-1;
 	}
 
 	public function lock($id='', $val=0)

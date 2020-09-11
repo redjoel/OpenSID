@@ -5,11 +5,10 @@ class Polygon extends Admin_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('header_model');
 		$this->load->model('plan_polygon_model');
-		$this->load->database();
 		$this->modul_ini = 9;
+		$this->sub_modul_ini = 8;
 	}
 
 	public function clear()
@@ -42,7 +41,6 @@ class Polygon extends Admin_Controller {
 
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
-		$nav['act_sub'] = 8;
 		$nav['tip'] = 5;
 
 		$this->load->view('header', $header);
@@ -69,7 +67,6 @@ class Polygon extends Admin_Controller {
 
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
-		$nav['act_sub'] = 8;
 		$nav['tip'] = 5;
 
 		$this->load->view('header', $header);
@@ -84,7 +81,6 @@ class Polygon extends Admin_Controller {
 		$data['polygon'] = $this->plan_polygon_model->get_polygon($polygon);
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
-		$nav['act_sub'] = 8;
 		$nav['tip'] = 5;
 
 		$this->load->view('header', $header);

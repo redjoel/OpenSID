@@ -34,6 +34,19 @@
 		return $data;
 	}
 
+	public function list_surat_mandiri()
+	{
+		$data = $this->db->where('kunci', 0)->
+			where('mandiri', 1)->
+			get('tweb_surat_format')->
+			result_array();
+		for ($i=0; $i<count($data); $i++)
+		{
+			$data[$i]['nama_lampiran'] = $this->nama_lampiran($data[$i]['lampiran']);
+		}
+		return $data;
+	}
+
 	public function list_surat_fav()
 	{
 		$data = $this->db->where('kunci', 0)->
@@ -64,7 +77,13 @@
 		if ($filter['bersurat']) $this->db->join('log_surat h', 'u.id = h.id_pend');
 		if ($cari)
 		{
-			$this->db->where("(nik like '%{$cari}%' or nama like '%{$cari}%' or tag_id_card like '%{$cari}%')");
+			$cari = $this->db->escape_like_str($cari);
+			$this->db
+				->group_start()
+					->like('nik', $cari)
+					->or_like('nama', $cari)
+					->or_like('tag_id_card', $cari)
+				->group_end();
 		}
 	}
 
@@ -100,7 +119,7 @@
 		}
 
     $endCount = $offset + $resultCount;
-    $morePages = $endCount > $count;
+    $morePages = $endCount < $jml;
 
     $hasil = array(
       "results" => $penduduk,
@@ -454,28 +473,45 @@
 		// Cari berdasarkan ibu_nik dulu
 		if (!empty($penduduk['ibu_nik']))
 		{
-			$sql = "SELECT u.id
-				FROM tweb_penduduk u
-				WHERE u.nik = ? limit 1";
-			$query = $this->db->query($sql, $penduduk['ibu_nik']);
-			$data = $query->row_array();
+			$data = $this->db
+				->select('u.id')
+				->where('nik', $penduduk['ibu_nik'])
+				->limit(1)->get()
+				->row_array();
 		}
 
 		// Kalau tidak ada, cari istri keluarga kalau penduduknya seorang anak dalam keluarga
 		// atau kepala keluarga perempuan
 		if (!isset($data['id']) AND $penduduk['kk_level'] == 4 )
 		{
-			$sql = "SELECT u.id
-				FROM tweb_penduduk u
-				WHERE (u.id_kk = (SELECT id_kk FROM tweb_penduduk where id = $id) AND u.kk_level = 3) OR (u.id_kk = (SELECT id_kk FROM tweb_penduduk where id = 36) AND u.kk_level = 1 AND u.sex = 2)
-				limit 1";
-			$query = $this->db->query($sql, $id);
-			$data = $query->row_array();
+			$id_kk = $penduduk['id_kk'];
+			$data = $this->db
+				->select('u.id')
+				->from('tweb_penduduk u')
+				->where('u.id_kk', $id_kk)
+				->group_start()
+					// istri
+					->where('u.kk_level', 3)
+					// kepala keluarga perempuan
+					->or_group_start()
+						->where('u.kk_level', 1)
+						->where('u.sex', 2)
+					->group_end()
+				->group_end()
+				->limit(1)->get()
+				->row_array();
 		}
 		if (isset($data['id']))
 		{
 			$ibu_id = $data['id'];
 			$ibu = $this->get_data_pribadi($ibu_id);
+			return $ibu;
+		}
+		else
+		{
+			// Ambil data sebisanya dari data ibu penduduk
+			$ibu['nik'] = $penduduk['ibu_nik'];
+			$ibu['nama'] = $penduduk['nama_ibu'];
 			return $ibu;
 		}
 	}
@@ -696,22 +732,8 @@
 
 	private function penandatangan_lampiran($data)
 	{
-		//Data penandatangan
-		$input = $data['input'];
-		$config = $data['config'];
-		$this->load->model('pamong_model');
-		$pamong_ttd = $this->pamong_model->get_ttd();
-		$penandatangan = '';
-		if (!empty($input['pilih_atas_nama']))
-		{
-			$penandatangan = 'a.n. ' . ucwords($pamong_ttd['jabatan'].' '.$config['nama_desa']);
-			$penandatangan .= ' <br> ';
-			$penandatangan .= $input['jabatan'];
-		}
-		else
-		{
-			$penandatangan .= $input['jabatan'].' '.$config['nama_desa'];
-		}
+		$penandatangan = str_replace('\par', '<br>', $this->atas_nama($data));
+
 		return $penandatangan;
 	}
 
@@ -858,12 +880,12 @@
 			// DATA AYAH dan IBU
 			$array_replace = array(
                 "[d_nama_ibu]"          => "$ibu[nama]",
-                "[d_nik_ibu]"           => "$ibu[nik]",
-                "[d_tempatlahir_ibu]"   => "$ibu[tempatlahir]",
-                "[d_tanggallahir_ibu]"  => tgl_indo_dari_str($ibu['tanggallahir']),
+                "[d_nik_ibu]"           => $ibu['nik'] ?: '-',
+                "[d_tempatlahir_ibu]"   => $ibu['tempatlahir'] ?: '-',
+                "[d_tanggallahir_ibu]"  => $ibu['tanggallahir'] ? tgl_indo_dari_str($ibu['tanggallahir']) : '-',
                 "[d_warganegara_ibu]"   => "$ibu[wn]",
-                "[d_agama_ibu]"         => "$ibu[agama]",
-                "[d_pekerjaan_ibu]"     => "$ibu[pek]",
+                "[d_agama_ibu]"         => $ibu['agama'] ?: '-',
+                "[d_pekerjaan_ibu]"     => $ibu['pek'] ?: '-',
                 "[d_alamat_ibu]"        => "RT $ibu[rt] / RW $ibu[rw] $ibu[dusun]",
                 "[d_nama_ayah]"         => "$ayah[nama]",
                 "[d_nik_ayah]"          => "$ayah[nik]",

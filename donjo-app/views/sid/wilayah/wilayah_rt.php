@@ -13,15 +13,15 @@
 			<div class="col-md-12">
 				<div class="box box-info">
 					<div class="box-header with-border">
-						<a href="<?= site_url("sid_core/form_rt/$id_dusun/$rw")?>" class="btn btn-social btn-flat btn-success btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Tambah Data"><i class="fa fa-plus"></i> Tambah RT</a>
-						<a href="<?= site_url("sid_core/cetak_rt/$id_dusun/$rw")?>" class="btn btn-social btn-flat bg-purple btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Cetak Data" target="_blank"><i class="fa fa-print "></i> Cetak</a>
-						<a href="<?= site_url("sid_core/excel_rt/$id_dusun/$rw")?>" class="btn btn-social btn-flat bg-navy btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Unduh Data" target="_blank"><i class="fa  fa-download"></i> Unduh</a>
-						<a href="<?= site_url("sid_core/sub_rw/$id_dusun")?>" class="btn btn-social btn-flat btn-info btn-sm btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block"  title="Kembali Ke Daftar RW">
+						<a href="<?= site_url("sid_core/form_rt/$id_dusun/$id_rw")?>" class="btn btn-social btn-flat btn-success btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Tambah Data"><i class="fa fa-plus"></i> Tambah RT</a>
+						<a href="<?= site_url("sid_core/cetak_rt/$id_dusun/$id_rw")?>" class="btn btn-social btn-flat bg-purple btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Cetak Data" target="_blank"><i class="fa fa-print "></i> Cetak</a>
+						<a href="<?= site_url("sid_core/excel_rt/$id_dusun/$id_rw")?>" class="btn btn-social btn-flat bg-navy btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Unduh Data" target="_blank"><i class="fa fa-download"></i> Unduh</a>
+						<a href="<?= site_url("sid_core/sub_rw/$id_dusun")?>" class="btn btn-social btn-flat btn-info btn-sm btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block" title="Kembali Ke Daftar RW">
 							<i class="fa fa-arrow-circle-left "></i>Kembali ke Daftar RW
-           	</a>
+						</a>
 					</div>
 					<div class="box-header with-border">
-						<strong>RW <?= $rw?> / <?= ucwords($this->setting->sebutan_dusun)?> <?= $dusun?>  </strong>
+						<strong>RW <?= $rw?> / <?= ucwords($this->setting->sebutan_dusun)?> <?= $dusun?> </strong>
 					</div>
 					<div class="box-body">
 						<div class="row">
@@ -34,9 +34,8 @@
 													<table class="table table-bordered table-striped dataTable table-hover">
 														<thead class="bg-gray disabled color-palette">
 															<tr>
-																<th width="2%"><input type="checkbox" id="checkall"/></th>
-																<th width="2%">No</th>
-																<th width="9%">Aksi</th>
+																<th class="padat">No</th>
+																<th class="padat">Aksi</th>
 																<th>RT</th>
 																<th width="30%">Ketua RT</th>
 																<th>NIK Ketua RT</th>
@@ -47,28 +46,27 @@
 															</tr>
 														</thead>
 														<tbody>
-															<?php foreach ($main as $data): ?>
+															<?php foreach ($main as $indeks => $data): ?>
 																<tr>
-																	<td><input type="checkbox" name="id_cb[]" value="<?= $data['id']?>" /></td>
-																	<td><?= $data['no']?></td>
-                                  <td nowrap>
+																	<td><?= $indeks + 1 ?></td>
+																	<td nowrap>
 																		<?php if ($data['rt']!="-"): ?>
-																			<a href="<?= site_url("sid_core/form_rt/$id_dusun/$rw/$data[id]")?>" class="btn bg-orange btn-flat btn-sm" title="Ubah"><i class="fa fa-edit"></i></a>
-																			<a href="#" data-href="<?= site_url("sid_core/delete_rt/$data[id]")?>" class="btn bg-maroon btn-flat btn-sm"  title="Hapus" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+																			<a href="<?= site_url("sid_core/form_rt/$id_dusun/$id_rw/$data[id]")?>" class="btn bg-orange btn-flat btn-sm" title="Ubah"><i class="fa fa-edit"></i></a>
+																			<a href="#" data-href="<?= site_url("sid_core/delete/rt/$data[id]")?>" class="btn bg-maroon btn-flat btn-sm" title="Hapus" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
 																		<?php endif; ?>
-                                    <?php if ($data['rt']!="-"): ?>
-															        <div class="btn-group">
+																		<?php if ($data['rt']!="-"): ?>
+																			<div class="btn-group">
 																				<button type="button" class="btn btn-social btn-flat btn-info btn-sm" data-toggle="dropdown"><i class='fa fa-arrow-circle-down'></i> Peta</button>
 																				<ul class="dropdown-menu" role="menu">
 																					<li>
-																						<a href="<?= site_url("sid_core/ajax_kantor_rt_maps/$id_dusun/$rw/$data[id]")?>" class="btn btn-social btn-flat btn-block btn-sm"><i class='fa fa-map-marker'></i> Lokasi Kantor RT</a>
+																						<a href="<?= site_url("sid_core/ajax_kantor_rt_maps/$id_dusun/$id_rw/$data[id]")?>" class="btn btn-social btn-flat btn-block btn-sm"><i class='fa fa-map-marker'></i> Lokasi Kantor RT</a>
 																					</li>
 																					<li>
-																						<a href="<?= site_url("sid_core/ajax_wilayah_rt_maps/$id_dusun/$rw/$data[id]")?>" class="btn btn-social btn-flat btn-block btn-sm"><i class='fa fa-map-marker'></i> Peta Wilayah RT</a>
+																						<a href="<?= site_url("sid_core/ajax_wilayah_rt_maps/$id_dusun/$id_rw/$data[id]")?>" class="btn btn-social btn-flat btn-block btn-sm"><i class='fa fa-map-marker'></i> Peta Wilayah RT</a>
 																					</li>
 																				</ul>
 																			</div>
-                                    <?php endif; ?>
+																		<?php endif; ?>
 																	</td>
 																	<td><?= $data['rt']?></td>
 																	<td nowrap><strong><?= $data['nama_ketua']?></strong></td>
@@ -82,7 +80,7 @@
 														</tbody>
 														<tfoot>
 															<tr>
-																<th colspan="6"><label>TOTAL</label></th>
+																<th colspan="5"><label>TOTAL</label></th>
 																<th><?= $total['jmlkk']?></th>
 																<th><?= $total['jmlwarga']?></th>
 																<th><?= $total['jmlwargal']?></th>
@@ -97,29 +95,10 @@
 								</div>
 							</div>
 						</div>
-						<div class='modal fade' id='confirm-delete' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
-							<div class='modal-dialog'>
-								<div class='modal-content'>
-									<div class='modal-header'>
-										<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-										<h4 class='modal-title' id='myModalLabel'><i class='fa fa-exclamation-triangle text-red'></i> Konfirmasi</h4>
-									</div>
-									<div class='modal-body btn-info'>
-										Apakah Anda yakin ingin menghapus data ini?
-									</div>
-									<div class='modal-footer'>
-										<button type="button" class="btn btn-social btn-flat btn-warning btn-sm" data-dismiss="modal"><i class='fa fa-sign-out'></i> Tutup</button>
-										<a class='btn-ok'>
-											<button type="button" class="btn btn-social btn-flat btn-danger btn-sm" id="ok-delete"><i class='fa fa-trash-o'></i> Hapus</button>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 </div>
-
+<?php $this->load->view('global/confirm_delete');?>

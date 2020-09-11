@@ -5,7 +5,6 @@ class Analisis_indikator extends Admin_Controller{
 	function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('analisis_indikator_model');
 		$this->load->model('header_model');
 		$_SESSION['submenu'] = "Data Indikator";
@@ -59,7 +58,7 @@ class Analisis_indikator extends Admin_Controller{
 		$data['list_kategori'] = $this->analisis_indikator_model->list_kategori();
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] =1;
-		$nav['act']= 5;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav');
 		$this->load->view('analisis_indikator/table',$data);
@@ -86,7 +85,7 @@ class Analisis_indikator extends Admin_Controller{
 		$header = $this->header_model->get_data();
 		$data['analisis_master'] = $this->analisis_indikator_model->get_analisis_master();
 		$header['minsidebar'] = 1;
-		$nav['act'] = 5;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav');
 		$this->load->view('analisis_indikator/form',$data);
@@ -104,7 +103,7 @@ class Analisis_indikator extends Admin_Controller{
 
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
-		$nav['act'] = 5;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav');
 		$this->load->view('analisis_indikator/parameter/table',$data);

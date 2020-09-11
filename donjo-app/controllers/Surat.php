@@ -5,7 +5,6 @@ class Surat extends Admin_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('header_model');
 		$this->load->model('penduduk_model');
 		$this->load->model('keluarga_model');
@@ -14,7 +13,9 @@ class Surat extends Admin_Controller {
 		$this->load->model('config_model');
 		$this->load->model('referensi_model');
 		$this->load->model('penomoran_surat_model');
+		$this->load->model('permohonan_surat_model');
 		$this->modul_ini = 4;
+		$this->sub_modul_ini = 31;
 	}
 
 	public function index()
@@ -37,8 +38,6 @@ class Surat extends Admin_Controller {
 		unset($_SESSION['id_pemberi_kuasa']);
 		unset($_SESSION['id_penerima_kuasa']);
 
-		$nav['act'] = 4;
-		$nav['act_sub'] = 31;
 		$this->load->view('header', $header);
 		$this->load->view('nav', $nav);
 		$this->load->view('surat/format_surat', $data);
@@ -47,8 +46,7 @@ class Surat extends Admin_Controller {
 
 	public function panduan()
 	{
-		$nav['act'] = 4;
-		$nav['act_sub'] = 33;
+		$this->sub_modul_ini = 33;
 		$header = $this->header_model->get_data();
 
 		$this->load->view('header', $header);
@@ -75,17 +73,28 @@ class Surat extends Admin_Controller {
 
 		$data['surat_url'] = rtrim($_SERVER['REQUEST_URI'], "/clear");
 		$data['form_action'] = site_url("surat/doc/$url");
-		$nav['act'] = 4;
-		$nav['act_sub'] = 31;
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav', $nav);
 		$this->load->view("surat/form_surat", $data);
 		$this->load->view('footer');
 	}
 
+	public function periksa_doc($id, $url)
+	{
+		// Ganti status menjadi 'Menunggu Tandatangan'
+		$this->permohonan_surat_model->update_status($id, array('status' => 2));
+		$this->cetak_doc($url);
+	}
+
 	public function doc($url = '')
+	{
+		$this->cetak_doc($url);
+	}
+
+	private function cetak_doc($url)
 	{
 		$format = $this->surat_model->get_surat($url);
 		$log_surat['url_surat'] = $format['id'];
@@ -150,12 +159,12 @@ class Surat extends Admin_Controller {
 	    # Unduh berkas zip
 	    header('Content-disposition: attachment; filename='.$nama_file.'.zip');
 	    header('Content-type: application/zip');
+			header($this->security->get_csrf_token_name().':'.$this->security->get_csrf_hash());
 	    readfile($berkas_zip);
-
-
 		}
 		else
 		{
+			header($this->security->get_csrf_token_name().':'.$this->security->get_csrf_hash());
 			header("location:".base_url(LOKASI_ARSIP.$nama_surat));
 		}
 	}

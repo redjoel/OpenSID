@@ -8,13 +8,7 @@
 	Uncomment jika situs ini untuk demo. Pada demo, user admin tidak bisa dihapus
 	dan username/password tidak bisa diubah
 */
-// $config['demo'] = 'y';
-
-/*
-	Password untuk File Manager yg digunakan pada form isian artikel.
-	Gunakan password yg sulit ditebak manusia maupun program otomatis.
-*/
-	$config['file_manager'] = "GantiKunciDesa";
+// $config['demo_mode'] = 'y';
 
 // Setting ini untuk menentukan user yang dipercaya. User dengan id di setting ini
 // dapat membuat artikel berisi video yang aktif ditampilkan di Web.

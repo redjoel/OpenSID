@@ -1,4 +1,4 @@
-<?php class Surat_masuk_model extends CI_Model {
+<?php class Surat_masuk_model extends MY_Model {
   // Konfigurasi untuk library 'upload'
   protected $uploadConfig = array();
 
@@ -21,8 +21,7 @@
 	public function autocomplete()
 	{
 		// TODO: tambahkan kata2 dari isi_singkat
-		$str = autocomplete_str('pengirim', 'surat_masuk');
-		return $str;
+		return $this->autocomplete_str('pengirim', 'surat_masuk');
 	}
 
 	private function search_sql()
@@ -373,8 +372,13 @@
 	 * @param   string  $idSuratMasuk  Id surat masuk
 	 * @return  void
 	 */
-	public function delete($idSuratMasuk)
+	public function delete($idSuratMasuk, $semua=false)
 	{
+		if (!$semua)
+		{
+			$this->session->success = 1;
+			$this->session->error_msg = '';
+		}
 		// Type check
 		$idSuratMasuk = is_string($idSuratMasuk) ? $idSuratMasuk : strval($idSuratMasuk);
 		// Redirect ke halaman surat masuk jika Id kosong
@@ -421,13 +425,13 @@
 
 	public function delete_all()
 	{
+		$this->session->success = 1;
+		$this->session->error_msg = '';
+
 		$id_cb = $_POST['id_cb'];
-		if (count($id_cb))
+		foreach ($id_cb as $id)
 		{
-			foreach ($id_cb as $id)
-			{
-				$this->delete($id);
-			}
+			$this->delete($id, $semua=true);
 		}
 	}
 
@@ -508,10 +512,13 @@
 		return $query;
 	}
 
-	public function delete_disposisi_surat($id_surat_masuk)
+	public function delete_disposisi_surat($id_surat_masuk, $semua=false)
 	{
-		$this->db->where('id_surat_masuk', $id_surat_masuk);
-		$this->db->delete('disposisi_surat_masuk');
+		if (!$semua) $this->session->success = 1;
+
+		$outp = $this->db->where('id_surat_masuk', $id_surat_masuk)->delete('disposisi_surat_masuk');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 }

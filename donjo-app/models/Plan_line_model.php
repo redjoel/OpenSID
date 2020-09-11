@@ -1,4 +1,48 @@
-<?php class Plan_line_model extends CI_Model {
+<?php
+/**
+ * File ini:
+ *
+ * Model untuk modul Pemetaan (Garis)
+ *
+ * /donjo-app/models/Plan_line_model.php
+ *
+ */
+
+/**
+ *
+ * File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package OpenSID
+ * @author  Tim Pengembang OpenDesa
+ * @copyright Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license http://www.gnu.org/licenses/gpl.html  GPL V3
+ * @link  https://github.com/OpenSID/OpenSID
+ */
+
+class Plan_line_model extends MY_Model {
 
 	public function __construct()
 	{
@@ -7,8 +51,7 @@
 
 	public function autocomplete()
 	{
-		$str = autocomplete_str('nama', 'line');
-		return $str;
+		return $this->autocomplete_str('nama', 'line');
 	}
 
 	private function search_sql()
@@ -57,7 +100,7 @@
 		return $sql;
 	}
 
-	public function list_data($o=0, $offset=0, $limit=500)
+	public function list_data($o=0, $offset=0, $limit=1000)
 	{
 		switch ($o)
 		{
@@ -92,40 +135,47 @@
 		return $data;
 	}
 
+	private function validasi($post)
+	{
+		$data['nama'] = nomor_surat_keputusan($post['nama']);
+		$data['color'] = htmlentities($post['color']);
+		return $data;
+	}
+
 	public function insert()
 	{
-		$data = $_POST;
-	  $lokasi_file = $_FILES['simbol']['tmp_name'];
-	  $tipe_file = $_FILES['simbol']['type'];
-	  $nama_file = $_FILES['simbol']['name'];
-	  $nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
-	  if (!empty($lokasi_file))
-	  {
+		$data = $this->validasi($this->input->post());
+		$lokasi_file = $_FILES['simbol']['tmp_name'];
+		$tipe_file = $_FILES['simbol']['type'];
+		$nama_file = $_FILES['simbol']['name'];
+		$nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
+		if (!empty($lokasi_file))
+		{
 			if ($tipe_file == "image/png" OR $tipe_file == "image/gif")
 			{
 				UploadSimbol($nama_file);
 				$data['simbol'] = $nama_file;
 				$outp = $this->db->insert('line',$data);
 			}
-	  }
-	  else
-	  {
+		}
+		else
+		{
 			unset($data['simbol']);
 			$outp = $this->db->insert('line',$data);
 		}
-		
+
 		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function update($id=0)
 	{
-	  $data = $_POST;
-	  $lokasi_file = $_FILES['simbol']['tmp_name'];
-	  $tipe_file = $_FILES['simbol']['type'];
-	  $nama_file = $_FILES['simbol']['name'];
-	  $nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
-	  if (!empty($lokasi_file))
-	  {
+		$data = $this->validasi($this->input->post());
+		$lokasi_file = $_FILES['simbol']['tmp_name'];
+		$tipe_file = $_FILES['simbol']['type'];
+		$nama_file = $_FILES['simbol']['name'];
+		$nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
+		if (!empty($lokasi_file))
+		{
 			if ($tipe_file == "image/png" OR $tipe_file == "image/gif")
 			{
 				UploadSimbol($nama_file);
@@ -134,7 +184,8 @@
 				$outp = $this->db->update('line',$data);
 			}
 			$_SESSION['success'] = 1;
-	  }
+		}
+
 		unset($data['simbol']);
 		$this->db->where('id',$id);
 		$outp = $this->db->update('line',$data);
@@ -142,34 +193,30 @@
 		status_sukses($outp); //Tampilkan Pesan
 	}
 
-	public function delete($id='')
+	public function delete($id='', $semua=false)
 	{
-		$sql = "DELETE FROM line WHERE id = ?";
-		$outp = $this->db->query($sql, array($id));
+		if (!$semua) $this->session->success = 1;
 
-		status_sukses($outp); //Tampilkan Pesan
+		$outp = $this->db->where('id', $id)->delete('line');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 	public function delete_all()
 	{
+		$this->session->success = 1;
+
 		$id_cb = $_POST['id_cb'];
-
-		if (count($id_cb))
+		foreach ($id_cb as $id)
 		{
-			foreach ($id_cb as $id)
-			{
-				$sql = "DELETE FROM line WHERE id = ?";
-				$outp = $this->db->query($sql, array($id));
-			}
+			$this->delete($id, $semua=true);
 		}
-		else $outp = false;
-
-		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function list_sub_line($line=1)
 	{
 		$sql = "SELECT * FROM line WHERE parrent = ? AND tipe = 2 ";
+
 		$query = $this->db->query($sql, $line);
 		$data = $query->result_array();
 
@@ -187,16 +234,16 @@
 
 	public function insert_sub_line($parrent=0)
 	{
-	  $lokasi_file = $_FILES['simbol']['tmp_name'];
-	  $tipe_file = $_FILES['simbol']['type'];
-	  $nama_file = $_FILES['simbol']['name'];
-	  $nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
-	  if (!empty($lokasi_file))
-	  {
+		$data = $this->validasi($this->input->post());
+		$lokasi_file = $_FILES['simbol']['tmp_name'];
+		$tipe_file = $_FILES['simbol']['type'];
+		$nama_file = $_FILES['simbol']['name'];
+		$nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
+		if (!empty($lokasi_file))
+		{
 			if ($tipe_file == "image/png" OR $tipe_file == "image/gif")
 			{
 				UploadSimbol($nama_file);
-				$data = $_POST;
 				$data['simbol'] = $nama_file;
 				$data['parrent'] = $parrent;
 				$data['tipe'] = 2;
@@ -207,28 +254,27 @@
 			{
 				$_SESSION['success'] = -1;
 			}
-	  }
-	  else
-	  {
-			$data = $_POST;
+		}
+		else
+		{
 			unset($data['simbol']);
 			$data['parrent'] = $parrent;
 			$data['tipe'] = 2;
 			$outp = $this->db->insert('line', $data);
 		}
-		
+
 		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function update_sub_line($id=0)
 	{
-	  $data = $_POST;
-	  $lokasi_file = $_FILES['simbol']['tmp_name'];
-	  $tipe_file = $_FILES['simbol']['type'];
-	  $nama_file = $_FILES['simbol']['name'];
-	  $nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
-	  if (!empty($lokasi_file))
-	  {
+		$data = $this->validasi($this->input->post());
+		$lokasi_file = $_FILES['simbol']['tmp_name'];
+		$tipe_file = $_FILES['simbol']['type'];
+		$nama_file = $_FILES['simbol']['name'];
+		$nama_file = str_replace(' ', '-', $nama_file); 	 // normalkan nama file
+		if (!empty($lokasi_file))
+		{
 			if ($tipe_file == "image/png" OR $tipe_file == "image/gif")
 			{
 				UploadSimbol($nama_file);
@@ -237,9 +283,9 @@
 				$outp = $this->db->update('line', $data);
 			}
 			$_SESSION['success'] = 1;
-	  }
-	  else
-	  {
+		}
+		else
+		{
 			unset($data['simbol']);
 			$this->db->where('id', $id);
 			$outp = $this->db->update('line', $data);
@@ -248,29 +294,24 @@
 		else $_SESSION['success'] = -1;
 	}
 
-	public function delete_sub_line($id='')
+	public function delete_sub_line($id='', $semua=false)
 	{
-		$sql = "DELETE FROM line WHERE id = ?";
-		$outp = $this->db->query($sql, array($id));
+		if (!$semua) $this->session->success = 1;
 
-		status_sukses($outp); //Tampilkan Pesan
+		$outp = $this->db->where('id', $id)->delete('line');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 	public function delete_all_sub_line()
 	{
+		$this->session->success = 1;
+
 		$id_cb = $_POST['id_cb'];
-
-		if (count($id_cb))
+		foreach ($id_cb as $id)
 		{
-			foreach ($id_cb as $id)
-			{
-				$sql = "DELETE FROM line WHERE id = ?";
-				$outp = $this->db->query($sql, array($id));
-			}
+			$this->delete_sub_line($id, $semua=true);
 		}
-		else $outp = false;
-
-		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function line_lock($id='', $val=0)

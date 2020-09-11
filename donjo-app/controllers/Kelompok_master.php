@@ -5,10 +5,10 @@ class Kelompok_master extends Admin_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('kelompok_master_model');
 		$this->load->model('header_model');
 		$this->modul_ini = 2;
+		$this->sub_modul_ini = 24;
 	}
 
 	public function clear()
@@ -42,8 +42,6 @@ class Kelompok_master extends Admin_Controller {
 		$data['paging']  = $this->kelompok_master_model->paging($p,$o);
 		$data['main']    = $this->kelompok_master_model->list_data($o, $data['paging']->offset, $data['paging']->per_page);
 		$data['keyword'] = $this->kelompok_master_model->autocomplete();
-		$nav['act'] = 2;
-		$nav['act_sub'] = 24;
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
 
@@ -69,8 +67,6 @@ class Kelompok_master extends Admin_Controller {
 			$data['form_action'] = site_url("kelompok_master/insert");
 		}
 
-		$nav['act'] = 2;
-		$nav['act_sub'] = 24;
 		$header = $this->header_model->get_data();
 		$header['minsidebar'] = 1;
 

@@ -24,7 +24,7 @@
 							<div class="form-group">
 								<label class="control-label col-sm-3">Nama Area / Properti</label>
 								<div class="col-sm-7">
-									<input name="nama" class="form-control input-sm required" type="text" value="<?=$area['nama']?>"></input>
+									<input name="nama" class="form-control input-sm nomor_sk required" maxlength="100" type="text" value="<?=$area['nama']?>"></input>
 								</div>
 							</div>
 							<div class="form-group">
@@ -56,7 +56,7 @@
 											<button type="button" class="btn btn-info btn-flat"  id="file_browser"><i class="fa fa-search"></i> Browse</button>
 										</span>
 									</div>
-									<p class="help-block small">Kosongi jika tidak ingin merubah Foto.</p>
+									<p class="help-block small text-red">Kosongkan jika tidak ingin mengubah foto.</p>
 								</div>
 							</div>
 							<div class="form-group">

@@ -5,14 +5,7 @@
 </style>
 
 <div class="content-wrapper">
-	<section class="content-header">
-		<h1>Surat Keterangan Penghasilan Orang Tua</h1>
-		<ol class="breadcrumb">
-			<li><a href="<?= site_url('hom_desa/about')?>"><i class="fa fa-dashboard"></i> Home</a></li>
-			<li><a href="<?= site_url('surat')?>"> Daftar Cetak Surat</a></li>
-			<li class="active">Surat Keterangan Penghasilan Orang Tua</li>
-		</ol>
-	</section>
+	<?php $this->load->view("surat/form/breadcrumb.php"); ?>
 	<section class="content">
 		<div class="row">
 			<div class="col-md-12">
@@ -66,13 +59,13 @@
 
 							<div class="form-group">
 								<label for="keperluan"  class="col-sm-3 control-label">Jumlah Penghasilan Ayah</label>
-								<div class="col-sm-8">
+								<div class="col-sm-4">
 									<input type="text" id="rupiah_ayah" name="hasil_ayah" class="rupiah form-control input-sm required" placeholder="Penghasilan Ayah dalam Rupiah tanpa sen"></input>
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="keperluan"  class="col-sm-3 control-label">Jumlah Penghasilan Ibu</label>
-								<div class="col-sm-8">
+								<div class="col-sm-4">
 									<input type="text" id="rupiah_ibu" name="hasil_ibu" class="rupiah form-control input-sm required" placeholder="Penghasilan Ibu dalam Rupiah tanpa sen"></input>
 								</div>
 							</div>

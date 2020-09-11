@@ -1,27 +1,32 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Siteman extends CI_Controller 
+class Siteman extends CI_Controller
 {
 
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		siteman_timeout();
 		$this->load->model('config_model');
 		$this->load->model('user_model');
-		$this->load->model('track_model');
 	}
 
 	public function index()
-	{
-		unset($_SESSION['balik_ke']);
-		$this->user_model->logout();
+	{		
+		if (isset($_SESSION['siteman']) and 1 == $_SESSION['siteman']) 
+		{
+			redirect('main');
+		}
+		unset($_SESSION['balik_ke']);		
 		$data['header'] = $this->config_model->get_data();
-
 		//Initialize Session ------------
 		if (!isset($_SESSION['siteman']))
-			$_SESSION['siteman'] = 0;
+		{
+			// Belum ada session variable
+			$this->session->set_userdata('siteman', 0);
+			$this->session->set_userdata('siteman_try', 4);
+			$this->session->set_userdata('siteman_wait', 0);
+		}
 		$_SESSION['success'] = 0;
 		$_SESSION['per_page'] = 10;
 		$_SESSION['cari'] = '';
@@ -30,33 +35,45 @@ class Siteman extends CI_Controller
 		//-------------------------------
 
 		$this->load->view('siteman', $data);
-		$_SESSION['siteman'] = 0;
-		$this->track_model->track_desa('main');
 	}
 
 	public function auth()
-	{
+	{		
+		$method = $this->input->method(TRUE);
+        $allow_method = ['POST'];
+		if(!in_array($method,$allow_method))
+		{
+			redirect('siteman/login');
+		}
 		$this->user_model->siteman();
 
-		if ($_SESSION['siteman'] == 1)
+		if ($_SESSION['siteman'] != 1)
 		{
-			$this->user_model->validate_admin_has_changed_password();
-			$_SESSION['dari_login'] = '1';
-			// Notif bisa dipanggil sewaktu-waktu dan tidak digunakan untuk redirect
-			if (isset($_SESSION['request_uri']) and strpos($_SESSION['request_uri'], 'notif/') === false)
-			{
-				$request_awal = str_replace(parse_url(site_url(), PHP_URL_PATH), '', $_SESSION['request_uri']);
-				unset($_SESSION['request_uri']);
-				redirect($request_awal);
-			}
-			else
-			{
-				unset($_SESSION['request_uri']);
-				redirect('main');
-			}
+			// Gagal otentifikasi
+			redirect('siteman');
+		}
+
+		if (!$this->user_model->syarat_sandi() and !($this->session->user == 1 && $this->setting->demo_mode))
+		{
+			// Password tidak memenuhi syarat kecuali di website demo
+			redirect('user_setting/change_pwd');
+		}
+
+		$_SESSION['dari_login'] = '1';
+		// Notif bisa dipanggil sewaktu-waktu dan tidak digunakan untuk redirect
+		if (isset($_SESSION['request_uri']) and strpos($_SESSION['request_uri'], 'notif/') === false)
+		{
+			$request_awal = str_replace(parse_url(site_url(), PHP_URL_PATH), '', $_SESSION['request_uri']);
+			unset($_SESSION['request_uri']);
+			redirect($request_awal);
 		}
 		else
-			redirect('siteman');
+		{
+			unset($_SESSION['request_uri']);
+			unset($this->session->fm_key);
+			$this->user_model->get_fm_key();
+			redirect('main');
+		}
 	}
 
 	public function login()
@@ -69,6 +86,12 @@ class Siteman extends CI_Controller
 	public function flash()
 	{
 		$this->load->view('config');
+	}
+
+	public function logout()
+	{
+		$this->user_model->logout();
+		$this->index();
 	}
 
 }

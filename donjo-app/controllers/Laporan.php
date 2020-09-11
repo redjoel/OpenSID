@@ -5,7 +5,6 @@ class Laporan extends Admin_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('header_model');
 		$this->load->model('laporan_bulanan_model');
 		$this->load->model('pamong_model');
@@ -18,6 +17,7 @@ class Laporan extends Admin_Controller {
 		//-------------------------------
 
 		$this->modul_ini = 3;
+		$this->sub_modul_ini = 28;
 	}
 
 	public function clear()
@@ -65,8 +65,6 @@ class Laporan extends Admin_Controller {
 		$data['pindah'] = $this->laporan_bulanan_model->pindah();
 		$data['hilang'] = $this->laporan_bulanan_model->hilang();
 		$data['lap'] = $lap;
-		$nav['act'] = 3;
-		$nav['act_sub'] = 28;
 		$header = $this->header_model->get_data();
 
 		$this->load->view('header', $header);

@@ -5,7 +5,6 @@ class Analisis_kategori extends Admin_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('analisis_kategori_model');
 		$this->load->model('header_model');
 		$_SESSION['submenu'] = "Data Kategori";
@@ -45,8 +44,8 @@ class Analisis_kategori extends Admin_Controller {
 		$data['keyword'] = $this->analisis_kategori_model->autocomplete();
 		$data['analisis_master'] = $this->analisis_kategori_model->get_analisis_master();
 		$header = $this->header_model->get_data();
-		$nav['act'] = 5;
 		$header['minsidebar'] = 1;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav');
 		$this->load->view('analisis_kategori/table',$data);

@@ -1,4 +1,4 @@
-<?php class Analisis_kategori_model extends CI_Model {
+<?php class Analisis_kategori_model extends MY_Model {
 
 	public function __construct()
 	{
@@ -7,8 +7,7 @@
 
 	public function autocomplete()
 	{
-		$str = autocomplete_str('kategori', 'analisis_kategori_indikator');
-		return $str;
+		return $this->autocomplete_str('kategori', 'analisis_kategori_indikator');
 	}
 
 	private function search_sql()
@@ -82,8 +81,9 @@
 
 	public function insert()
 	{
-		$data = $_POST;
-		$data['id_master'] = $_SESSION['analisis_master'];
+		$data = [];
+		$data['id_master'] = $this->session->analisis_master;
+		$data['kategori'] = htmlentities($this->input->post('kategori'));
 		$outp = $this->db->insert('analisis_kategori_indikator', $data);
 
 		status_sukses($outp); //Tampilkan Pesan
@@ -91,35 +91,32 @@
 
 	public function update($id=0)
 	{
-		$data = $_POST;
-		$data['id_master']=$_SESSION['analisis_master'];
+		$data = [];
+		$data['id_master'] = $this->session->analisis_master;
+		$data['kategori'] = htmlentities($this->input->post('kategori'));
 		$this->db->where('id', $id);
 		$outp = $this->db->update('analisis_kategori_indikator', $data);
 		status_sukses($outp); //Tampilkan Pesan
 	}
 
-	public function delete($id='')
+	public function delete($id='', $semua=false)
 	{
-		$sql = "DELETE FROM analisis_kategori_indikator WHERE id = ?";
-		$outp = $this->db->query($sql, array($id));
+		if (!$semua) $this->session->success = 1;
 
-		status_sukses($outp); //Tampilkan Pesan
+		$outp = $this->db->where('id', $id)->delete('analisis_kategori_indikator');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 	public function delete_all()
 	{
-		$id_cb = $_POST['id_cb'];
-		if (count($id_cb))
-		{
-			foreach ($id_cb as $id)
-			{
-				$sql = "DELETE FROM analisis_kategori_indikator WHERE id = ?";
-				$outp = $this->db->query($sql, array($id));
-			}
-		}
-		else $outp = false;
+		$this->session->success = 1;
 
-		status_sukses($outp); //Tampilkan Pesan
+		$id_cb = $_POST['id_cb'];
+		foreach ($id_cb as $id)
+		{
+			$this->delete($id, $semua=true);
+		}
 	}
 
 	public function get_analisis_kategori($id=0)

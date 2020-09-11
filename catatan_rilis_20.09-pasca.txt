@@ -1,0 +1,23 @@
+Di rilis ini, versi 20.09-pasca, tersedia [untuk diisi]. Rilis ini juga berisi perbaikan lain yang diminta Komunitas SID.
+
+Terima kasih pada afa28, Ahmad Afandi dan Masumo yang terus berkontribusi. Terima kasih pula pada Yonathan Rizky yang baru mulai berkontribusi.
+
+Lengkapnya, isi rilis versi 20.09-pasca adalah sebagai berikut:
+
+1. #3514: Sekarang judul produk hukum dan informasi publik diperpanjang sampai 200 karakter.
+2. #3522: Data suplemen tidak bisa lagi dihapus kalau masih digunakan, yaitu masih ada terdata.
+3. #3523: Sekarang perubahan jumlah data paginasi di Program Bantuan berfungsi benar. [bug-fix]
+4. Rapikan pengelolaan session. Hapus session pada waktu logout. [teknis, security-fix]
+5. #3532: Sekarang kolom status penduduk tampil benar di form ubah biodata penduduk. [bug-fix]
+6. #3503: Data ibu untuk Surat Keterangan Penghasilan Orangtua telah diperbaiki. [bug-fix]
+7. #3544: Sekarang Responsive File Manager dapat diakses di OS Windows untuk memasukkan gambar ke artikel. [bug-fix]
+8. #3527: Anggota KK sekarang hanya boleh penduduk dengan status TETAP.
+9. #3519: Tampilkan foto penduduk di Log Penduduk.
+10. #3422: Sekarang bisa menyaring daftar penduduk untuk sekumpulan NIK sekaligus.
+11. #3422: Sekarang bisa menyaring daftar keluarga untuk sekumpulan No. KK sekaligus.
+12. #3552, #2942: Perbaiki supaya kesempatan gagal login 3 kali dan timeout kembali normal. [bug-fix]
+13. #3543: Terapkan menu cetak dan unduh untuk Pertanahan > Daftar Persil.
+
+
+Selalu diingatkan, apabila meng-upgrade (yaitu bukan install baru) dari versi SEBELUM versi 20.09-pasca, lakukan Database > Migrasi DB untuk menyesuaikan struktur database dan folder desa.
+

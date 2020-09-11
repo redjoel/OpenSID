@@ -1,4 +1,4 @@
-<?php  if(!defined('BASEPATH')) exit('No direct script access allowed'); ?>
+<?php if(!defined('BASEPATH')) exit('No direct script access allowed'); ?>
 
 <div style="margin-left:.5em;">
 	<div class="box box-primary box-solid">
@@ -27,7 +27,7 @@
 								<?= tgl_indo($data["tgl_upload"])?>
 							</td>
 							<td>
-								<a href="<?= site_url('first/artikel/'.buat_slug($data))?>"><?= $data["judul"]?></a>
+								<a href="<?= site_url('artikel/'.buat_slug($data))?>"><?= $data["judul"]?></a>
 							</td>
 							<td style="text-align:center;">
 								<?= $data["owner"]?>
@@ -43,7 +43,7 @@
 				Belum ada arsip konten web.
 			<?php endif; ?>
 		</div>
-		<?php if(count($farsip)>0): ?>
+		<?php if(count($farsip)>0 AND $paging->num_rows > $paging->per_page): ?>
 			<div class="box-footer">
 				<ul class="pagination pagination-sm no-margin">
 					<?php if($paging->start_link): ?>

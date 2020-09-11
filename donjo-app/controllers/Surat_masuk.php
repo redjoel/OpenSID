@@ -5,7 +5,6 @@ class Surat_masuk extends Admin_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		// Untuk bisa menggunakan helper force_download()
 		$this->load->helper('download');
 		$this->load->model('surat_masuk_model');
@@ -15,6 +14,7 @@ class Surat_masuk extends Admin_Controller {
 		$this->load->model('header_model');
 		$this->load->model('penomoran_surat_model');
 		$this->modul_ini = 15;
+		$this->sub_modul_ini = 57;
 		$this->tab_ini = 2;
 	}
 
@@ -50,9 +50,8 @@ class Surat_masuk extends Admin_Controller {
 		$data['tahun_penerimaan'] = $this->surat_masuk_model->list_tahun_penerimaan();
 		$data['keyword'] = $this->surat_masuk_model->autocomplete();
 		$header = $this->header_model->get_data();
-		$nav['act'] = 15;
-		$nav['act_sub'] = 57;
 		$header['minsidebar'] = 1;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav', $nav);
 		$this->load->view('surat_masuk/table', $data);
@@ -89,11 +88,9 @@ class Surat_masuk extends Admin_Controller {
 		$ekstensiFile = explode('.', end($berkas));
 		$ekstensiFile = end($ekstensiFile);
 		$data['surat_masuk']['berkas_scan'] = $namaFile.'.'.$ekstensiFile;
-		$nav['act'] = 15;
-		$nav['act_sub'] = 57;
 		$header['minsidebar'] = 1;
+
 		$this->load->view('header', $header);
-		$nav['act'] = $this->tab_ini;
 		$this->load->view('nav', $nav);
 		$this->load->view('surat_masuk/form', $data);
 		$this->load->view('footer');
@@ -159,7 +156,7 @@ class Surat_masuk extends Admin_Controller {
 		$data['aksi'] = "Cetak";
 		$data['pamong'] = $this->pamong_model->list_data(true);
 		$data['form_action'] = site_url("surat_masuk/disposisi/$id");
-		$this->load->view('surat_masuk/ajax_disposisi', $data);
+		$this->load->view('global/ttd_pamong', $data);
 	}
 
 	public function dialog_cetak($o = 0)

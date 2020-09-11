@@ -5,9 +5,9 @@ class Keuangan extends Admin_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
 		$this->load->model('keuangan_model');
 		$this->load->model('header_model');
+		$this->load->model('keuangan_grafik_model');
 		$this->modul_ini = 201;
 	}
 
@@ -39,6 +39,8 @@ class Keuangan extends Admin_Controller {
 
 	public function grafik($jenis)
 	{
+		$this->sub_modul_ini = 203;
+
 		$data['tahun_anggaran'] = $this->keuangan_model->list_tahun_anggaran();
 		$tahun = $this->session->userdata('set_tahun') ? $this->session->userdata('set_tahun') : $data['tahun_anggaran'][0];
 		$semester = $this->session->userdata('set_semester') ? $this->session->userdata('set_semester') : 0;
@@ -49,8 +51,8 @@ class Keuangan extends Admin_Controller {
 		$this->session->set_userdata( $sess );
 		$this->load->model('keuangan_grafik_model');
 		$header = $this->header_model->get_data();
-		$nav['act_sub'] = 203;
 		$header['minsidebar'] = 1;
+
 		$this->load->view('header', $header);
 		$this->load->view('nav', $nav);
 		$smt = $this->session->userdata('set_semester');
@@ -102,10 +104,10 @@ class Keuangan extends Admin_Controller {
 
 	public function impor_data()
 	{
+		$this->sub_modul_ini = 202;
 		$data['main'] = $this->keuangan_model->list_data();
 		$data['form_action'] = site_url("keuangan/proses_impor");
 		$header = $this->header_model->get_data();
-		$nav['act_sub'] = 202;
 		$this->load->view('header', $header);
 		$this->load->view('nav', $nav);
 		$this->load->view('keuangan/impor_data', $data);
@@ -176,9 +178,7 @@ class Keuangan extends Admin_Controller {
 	public function delete($id = '')
 	{
 		$this->redirect_hak_akses('h', 'keuangan');
-		$_SESSION['success'] = 1;
 		$outp = $this->keuangan_model->delete($id);
-		if (!$outp) $_SESSION['success'] = -1;
 		redirect('keuangan/impor_data');
 	}
 
